@@ -7,7 +7,8 @@ import os
 
 '''
 
-path = "PATH"  # Вставить путь до файлов
+path = str(input('Введите путь к папке: -->> '))  # Вставить путь до файлов
+#path = 'ПУТЬ К ПАПКЕ'
 counter = 1
 for filename in os.listdir(path):
     if not filename.startswith('.'):  # Строчка, которая будет игнорировать скрытые файлы
