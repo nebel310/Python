@@ -4,7 +4,7 @@ import pyperclip
 def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=""):
     """Рекурсивно генерирует дерево директории"""
     if exclude_dirs is None:
-        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea']
+        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'frontend_react']
     if exclude_files is None:
         exclude_files = ['.gitignore', 'README.md']
     
@@ -45,7 +45,7 @@ def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=
     
     return tree
 
-def scan_directory(path, exclude_dirs=None, exclude_files=None):
+def scan_directory(path, extensions, exclude_dirs=None, exclude_files=None):
     if exclude_dirs is None:
         exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'node_modules', 'dist', 'build']
     if exclude_files is None:
@@ -63,15 +63,25 @@ def scan_directory(path, exclude_dirs=None, exclude_files=None):
     # Добавляем разделитель
     output += "\n" + "="*50 + "\n\n"
     
-    # Собираем содержимое .py файлов
-    py_files_content = ""
+    # Собираем содержимое файлов с указанными расширениями
+    files_content = ""
     for root, dirs, files in os.walk(path):
         # Исключаем папки из списка
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         
         for file in files:
             # Исключаем файлы из списка и проверяем расширение
-            if file in exclude_files or not file.endswith('.py'):
+            if file in exclude_files:
+                continue
+            
+            # Проверяем, имеет ли файл нужное расширение
+            has_extension = False
+            for ext in extensions:
+                if file.endswith(f'.{ext}'):
+                    has_extension = True
+                    break
+            
+            if not has_extension:
                 continue
                 
             file_path = os.path.join(root, file)
@@ -79,22 +89,32 @@ def scan_directory(path, exclude_dirs=None, exclude_files=None):
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                 rel_path = os.path.relpath(file_path, path)
-                py_files_content += f"{rel_path}:\n```python\n{content}\n```\n\n"
+                files_content += f"{rel_path}:\n```\n{content}\n```\n\n"
             except Exception as e:
                 rel_path = os.path.relpath(file_path, path)
-                py_files_content += f"{rel_path}:\n[Ошибка чтения: {e}]\n\n"
+                files_content += f"{rel_path}:\n[Ошибка чтения: {e}]\n\n"
     
-    output += py_files_content
+    output += files_content
     
     print(output)
     pyperclip.copy(output)
     print("Результат скопирован в буфер обмена!")
 
 # Укажите путь к вашей папке здесь
-path = r"D:\Projects\VKTG_parser"
+path = str(input("Введите путь до папки -> "))
+
+# Запрашиваем расширения файлов
+extensions_input = str(input("Список расширений файлов (через пробел): "))
+# Разделяем строку по пробелам и удаляем пустые элементы
+extensions = [ext.strip() for ext in extensions_input.split() if ext.strip()]
+
+# Если пользователь не ввел расширения, используем стандартные
+if not extensions:
+    extensions = ['py']
+    print("Используются стандартные расширения: py")
 
 # Настройте исключения здесь
 exclude_dirs = ['.git', '__pycache__', 'venv', 'node_modules', 'dist', 'build']
 exclude_files = ['.gitignore', 'README.md', 'Thumbs.db', 'desktop.ini']
 
-scan_directory(path, exclude_dirs, exclude_files)
+scan_directory(path, extensions, exclude_dirs, exclude_files)
