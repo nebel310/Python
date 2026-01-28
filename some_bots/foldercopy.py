@@ -4,7 +4,7 @@ import pyperclip
 def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=""):
     """Рекурсивно генерирует дерево директории"""
     if exclude_dirs is None:
-        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'frontend_react']
+        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', '.venv']
     if exclude_files is None:
         exclude_files = ['.gitignore', 'README.md']
     
@@ -47,7 +47,7 @@ def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=
 
 def scan_directory(path, extensions, exclude_dirs=None, exclude_files=None):
     if exclude_dirs is None:
-        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'node_modules', 'dist', 'build']
+        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'node_modules', 'dist', 'build', '.venv']
     if exclude_files is None:
         exclude_files = ['.gitignore', 'README.md', 'Thumbs.db', 'desktop.ini']
     
@@ -114,7 +114,7 @@ if not extensions:
     print("Используются стандартные расширения: py")
 
 # Настройте исключения здесь
-exclude_dirs = ['.git', '__pycache__', 'venv', 'node_modules', 'dist', 'build']
+exclude_dirs = ['.git', '__pycache__', 'venv', 'node_modules', 'dist', 'build', 'frontend_react', '.venv']
 exclude_files = ['.gitignore', 'README.md', 'Thumbs.db', 'desktop.ini']
 
 scan_directory(path, extensions, exclude_dirs, exclude_files)
