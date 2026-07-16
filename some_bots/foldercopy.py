@@ -1,12 +1,32 @@
 import os
 import pyperclip
 
+# Глобальные списки исключений
+DEFAULT_EXCLUDE_DIRS = [
+    '.git',
+    '__pycache__',
+    'venv',
+    'node_modules',
+    'dist', 'build',
+    'frontend_react',
+    '.venv',
+    '.vscode',
+    '.idea'
+]
+
+DEFAULT_EXCLUDE_FILES = [
+    '.gitignore',
+    'README.md',
+    'Thumbs.db',
+    'desktop.ini'
+]
+
 def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=""):
     """Рекурсивно генерирует дерево директории"""
     if exclude_dirs is None:
-        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', '.venv']
+        exclude_dirs = DEFAULT_EXCLUDE_DIRS
     if exclude_files is None:
-        exclude_files = ['.gitignore', 'README.md']
+        exclude_files = DEFAULT_EXCLUDE_FILES
     
     tree = ""
     items = []
@@ -47,9 +67,9 @@ def generate_directory_tree(path, exclude_dirs=None, exclude_files=None, prefix=
 
 def scan_directory(path, extensions, exclude_dirs=None, exclude_files=None):
     if exclude_dirs is None:
-        exclude_dirs = ['.git', '__pycache__', 'venv', '.vscode', '.idea', 'node_modules', 'dist', 'build', '.venv']
+        exclude_dirs = DEFAULT_EXCLUDE_DIRS
     if exclude_files is None:
-        exclude_files = ['.gitignore', 'README.md', 'Thumbs.db', 'desktop.ini']
+        exclude_files = DEFAULT_EXCLUDE_FILES
     
     output = "*Схема директории*\n\n"
     
@@ -113,8 +133,4 @@ if not extensions:
     extensions = ['py']
     print("Используются стандартные расширения: py")
 
-# Настройте исключения здесь
-exclude_dirs = ['.git', '__pycache__', 'venv', 'node_modules', 'dist', 'build', 'frontend_react', '.venv']
-exclude_files = ['.gitignore', 'README.md', 'Thumbs.db', 'desktop.ini']
-
-scan_directory(path, extensions, exclude_dirs, exclude_files)
+scan_directory(path, extensions)
