@@ -83,6 +83,8 @@ print(f"Наблюдаемое значение χ²-критерия: χ²_на
 print("\n=== Случай а) H1: D(X) > σ0² ===")
 chi2_crit_a = chi2.ppf(1 - ALPHA, k)
 print(f"Критическое значение χ²-критерия: χ²_кр = {chi2_crit_a:.4f}")
+print(f"Правило: H0 не отвергается, если χ²_набл < χ²_кр")
+print(f"Сравнение: {chi2_obs:.4f} {'<' if chi2_obs < chi2_crit_a else '>='} {chi2_crit_a:.4f}")
 if chi2_obs < chi2_crit_a:
     print("Анализ результатов: H0 не отвергается (нет оснований считать D(X) > σ0²)")
 else:
@@ -93,6 +95,8 @@ chi2_crit_b_low = chi2.ppf(ALPHA / 2, k)
 chi2_crit_b_high = chi2.ppf(1 - ALPHA / 2, k)
 print(f"Нижнее критическое значение: χ²_кр_ниж = {chi2_crit_b_low:.4f}")
 print(f"Верхнее критическое значение: χ²_кр_верх = {chi2_crit_b_high:.4f}")
+print(f"Правило: H0 не отвергается, если χ²_кр_ниж < χ²_набл < χ²_кр_верх")
+print(f"Сравнение: {chi2_crit_b_low:.4f} {'<' if chi2_obs > chi2_crit_b_low else '>='} {chi2_obs:.4f} {'<' if chi2_obs < chi2_crit_b_high else '>='} {chi2_crit_b_high:.4f}")
 if chi2_crit_b_low < chi2_obs < chi2_crit_b_high:
     print("Анализ результатов: H0 не отвергается (нет оснований считать D(X) != σ0²)")
 else:
@@ -101,6 +105,8 @@ else:
 print("\n=== Случай в) H1: D(X) < σ0² ===")
 chi2_crit_v = chi2.ppf(ALPHA, k)
 print(f"Критическое значение χ²-критерия: χ²_кр = {chi2_crit_v:.4f}")
+print(f"Правило: H0 не отвергается, если χ²_набл > χ²_кр")
+print(f"Сравнение: {chi2_obs:.4f} {'>' if chi2_obs > chi2_crit_v else '<='} {chi2_crit_v:.4f}")
 if chi2_obs > chi2_crit_v:
     print("Анализ результатов: H0 не отвергается (нет оснований считать D(X) < σ0²)")
 else:
