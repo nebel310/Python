@@ -1,14 +1,9 @@
 import math
 
-# Интервальный ряд (из ЛР 1.1)
-# Середины интервалов (X)
-INTERVAL_X = [18.5, 27.5, 36.5, 45.5, 54.5, 63.5, 72.5]
-# Частоты (Y)
-INTERVAL_Y = [4811, 9476, 7243, 7951, 1140, 1472, 330]
-# Ширина интервала (разница между верхней и нижней границей)
-INTERVAL_WIDTH = 9
+# Границы интервалов из ЛР 1.1 (от 14 до 77, 7 групп)
+BOUNDS = [14, 23, 32, 41, 50, 59, 68, 77]
 
-# Дискретный ряд (из ЛР 1.1) для расчета коэффициента Спирмена
+# Исходный дискретный ряд (из ЛР 1.1)
 # Ключ - возраст (X), значение - частота (Y)
 DISCRETE_DATA = {
     14: 49, 15: 53, 16: 236, 17: 126, 18: 806,
@@ -26,38 +21,62 @@ DISCRETE_DATA = {
 }
 
 
-def calculate_variances(x_mids, freqs, h):
-    """Вычисляет внутригрупповую, межгрупповую и общую дисперсию
+def calculate_exact_variances(data, bounds):
+    """Вычисляет точные дисперсии на основе исходных данных и интервалов
     Вход:
-    x_mids - список середин интервалов
-    freqs - список частот
-    h - ширина интервала
+    data - словарь {значение: частота}
+    bounds - список границ интервалов
     Выход:
     d_intra - внутригрупповая дисперсия
     d_inter - межгрупповая дисперсия
     d_total - общая дисперсия
-    mean_x - общая средняя
     """
-    n = len(x_mids)
-    total_n = 0
-    for f in freqs:
-        total_n += f
+    total_n = sum(data.values())
+    
+    sum_all_xf = 0
+    for x, f in data.items():
+        sum_all_xf += x * f
+    mean_total = sum_all_xf / total_n
+    
+    sum_total_var = 0
+    for x, f in data.items():
+        sum_total_var += ((x - mean_total) ** 2) * f
+    d_total = sum_total_var / total_n
 
-    sum_xf = 0.0
-    for i in range(n):
-        sum_xf += x_mids[i] * freqs[i]
-    mean_x = sum_xf / total_n
+    sum_inter_var = 0.0
+    sum_intra_var = 0.0
 
-    sum_inter = 0.0
-    for i in range(n):
-        sum_inter += (x_mids[i] - mean_x)**2 * freqs[i]
-    d_inter = sum_inter / total_n
+    for i in range(len(bounds) - 1):
+        left = bounds[i]
+        right = bounds[i+1]
+        
+        group_x = []
+        group_f = []
+        for x, f in data.items():
+            if i == len(bounds) - 2:
+                if left <= x <= right:
+                    group_x.append(x)
+                    group_f.append(f)
+            else:
+                if left <= x < right:
+                    group_x.append(x)
+                    group_f.append(f)
+        
+        n_j = sum(group_f)
+        if n_j == 0:
+            continue
 
-    d_intra = (h**2) / 12
-
-    d_total = d_intra + d_inter
-
-    return d_intra, d_inter, d_total, mean_x
+        mean_j = sum(x * f for x, f in zip(group_x, group_f)) / n_j
+        
+        sum_inter_var += ((mean_j - mean_total) ** 2) * n_j
+        
+        group_var = sum(((x - mean_j) ** 2) * f for x, f in zip(group_x, group_f)) / n_j
+        sum_intra_var += group_var * n_j
+        
+    d_inter = sum_inter_var / total_n
+    d_intra = sum_intra_var / total_n
+    
+    return d_intra, d_inter, d_total
 
 
 def calculate_correlation_ratio(d_inter, d_total):
@@ -68,8 +87,7 @@ def calculate_correlation_ratio(d_inter, d_total):
     Выход:
     eta - корреляционное отношение
     """
-    eta = math.sqrt(d_inter / d_total)
-    return eta
+    return math.sqrt(d_inter / d_total)
 
 
 def get_ranks(values):
@@ -116,13 +134,13 @@ def calculate_spearman(x_vals, y_vals):
 
 
 def main():
-    d_intra, d_inter, d_total, mean_x = calculate_variances(INTERVAL_X, INTERVAL_Y, INTERVAL_WIDTH)
+    d_intra, d_inter, d_total = calculate_exact_variances(DISCRETE_DATA, BOUNDS)
     
     print("1. Расчет дисперсий на основе интервального ряда:")
     print(f"Внутригрупповая дисперсия: {d_intra:.4f}")
     print(f"Межгрупповая дисперсия: {d_inter:.4f}")
     print(f"Общая дисперсия: {d_total:.4f}")
-    print(f"Проверка формулы: {d_intra:.4f} + {d_inter:.4f} = {d_total:.4f}")
+    print(f"Проверка формулы: {d_intra:.4f} + {d_inter:.4f} = {d_intra + d_inter:.4f}")
     print("-" * 50)
     
     eta = calculate_correlation_ratio(d_inter, d_total)
