@@ -28,8 +28,6 @@ def linear_interpolation(x, x_arr, y_arr):
 
 def structural_identification():
     """Выполняет структурную идентификацию по 7 видам зависимостей
-    Вход:
-    Нет
     Выход:
     results - список словарей с результатами для каждой зависимости
     """
@@ -81,8 +79,6 @@ def structural_identification():
 
 def polynomial_degree():
     """Определяет степень аппроксимирующего многочлена
-    Вход:
-    Нет
     Выход:
     degree - степень многочлена
     diffs - список списков разностей
@@ -110,10 +106,6 @@ def polynomial_degree():
 
 def plot_data():
     """Строит график экспериментальных данных и сохраняет его в файл
-    Вход:
-    Нет
-    Выход:
-    Нет
     """
     plt.figure()
     plt.plot(X_ORIG, Y_ORIG, 'o-')
